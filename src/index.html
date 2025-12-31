@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Aplikasi berbagi cerita dari seluruh dunia dengan visualisasi peta interaktif" />
+    <meta name="theme-color" content="#4A90E2" />
+    <link rel="icon" href="/icons/android/android-launchericon-192-192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/icons/ios/180.png" />
+    <title>Story App - Cerita dari Seluruh Dunia</title>
+
+    <script type="module" src="/scripts/index.js"></script>
+  </head>
+  <body>
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+
+    <header role="banner">
+      <div class="main-header container">
+        <a class="brand-name" href="#/" aria-label="Story App - Beranda">
+          📖 Story App
+        </a>
+
+        <nav id="navigation-drawer" class="navigation-drawer" role="navigation" aria-label="Main navigation">
+          <ul id="nav-list" class="nav-list">
+            <li><a href="#/">Beranda</a></li>
+            <li><a href="#/favorites">Favorit</a></li>
+            <li><a href="#/about">Tentang</a></li>
+          </ul>
+        </nav>
+
+        <button 
+          id="drawer-button" 
+          class="drawer-button" 
+          aria-label="Toggle navigation menu"
+          aria-expanded="false"
+        >
+          ☰
+        </button>
+      </div>
+    </header>
+
+    <main id="main-content" class="main-content" role="main"></main>
+
+    <footer role="contentinfo" class="footer">
+      <div class="container">
+        <p>&copy; 2025 Story App. Dibuat dengan ❤️ untuk berbagi cerita.</p>
+      </div>
+    </footer>
+  </body>
+</html>
