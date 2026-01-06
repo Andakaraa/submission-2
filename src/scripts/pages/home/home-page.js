@@ -1,5 +1,11 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
 import storyAPI from '../../data/story-api';
 import authAPI from '../../data/auth-api';
 import indexedDBHelper from '../../utils/indexeddb-helper';
