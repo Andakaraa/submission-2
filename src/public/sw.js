@@ -44,13 +44,11 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Skip non-http(s) requests (e.g., chrome-extension) that cache API cannot handle
   if (url.protocol !== 'http:' && url.protocol !== 'https:') {
     return;
   }
 
   if (url.origin === 'https://story-api.dicoding.dev') {
-    // Only cache GET requests; cache.put does not support POST/PUT
     if (request.method !== 'GET') {
       return;
     }
@@ -109,12 +107,11 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Push notification event
 self.addEventListener('push', (event) => {
   console.log('Service Worker: Push notification received', event);
   
-  let notificationData = {
-    title: 'Story App',
+  let notificationTitle = 'Story App';
+  let notificationOptions = {
     body: 'Ada cerita baru!',
     icon: '/favicon.png',
     badge: '/favicon.png',
@@ -123,47 +120,50 @@ self.addEventListener('push', (event) => {
     },
   };
 
-  // Parse push data if available
   if (event.data) {
     try {
       const data = event.data.json();
       console.log('Push data received:', data);
       
-      notificationData = {
-        title: data.title || 'Story App',
-        body: data.body || data.message || 'Ada cerita baru!',
-        icon: data.icon || '/favicon.png',
-        badge: '/favicon.png',
-        image: data.image,
-        data: {
-          url: data.url || '/',
-          storyId: data.storyId,
-        },
-        actions: [
-          {
-            action: 'open',
-            title: 'Lihat Cerita',
-            icon: '/favicon.png',
+      if (data.title) {
+        notificationTitle = data.title;
+      }
+      
+      if (data.options) {
+        notificationOptions = {
+          body: data.options.body || 'Ada cerita baru!',
+          icon: data.options.icon || '/favicon.png',
+          badge: '/favicon.png',
+          image: data.options.image,
+          data: {
+            url: data.options.url || '/',
+            storyId: data.options.storyId,
           },
-          {
-            action: 'close',
-            title: 'Tutup',
-          },
-        ],
-        requireInteraction: false,
-        vibrate: [200, 100, 200],
-      };
+          actions: [
+            {
+              action: 'open',
+              title: 'Lihat Cerita',
+              icon: '/favicon.png',
+            },
+            {
+              action: 'close',
+              title: 'Tutup',
+            },
+          ],
+          requireInteraction: false,
+          vibrate: [200, 100, 200],
+        };
+      }
     } catch (error) {
       console.error('Error parsing push data:', error);
     }
   }
 
   event.waitUntil(
-    self.registration.showNotification(notificationData.title, notificationData)
+    self.registration.showNotification(notificationTitle, notificationOptions)
   );
 });
 
-// Notification click event
 self.addEventListener('notificationclick', (event) => {
   console.log('Notification clicked:', event);
   
@@ -178,7 +178,6 @@ self.addEventListener('notificationclick', (event) => {
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true })
       .then((clientList) => {
-        // Check if there's already a window/tab open
         for (let i = 0; i < clientList.length; i++) {
           const client = clientList[i];
           if (client.url === urlToOpen && 'focus' in client) {
@@ -186,7 +185,6 @@ self.addEventListener('notificationclick', (event) => {
           }
         }
         
-        // Open new window/tab
         if (clients.openWindow) {
           return clients.openWindow(urlToOpen);
         }
@@ -194,7 +192,6 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
-// Background Sync event
 self.addEventListener('sync', (event) => {
   console.log('Service Worker: Background sync', event.tag);
   
@@ -222,13 +219,11 @@ async function syncStories() {
         formData.append('lat', story.lat);
         formData.append('lon', story.lon);
         
-        // Convert base64 to blob if photo is base64
         if (story.photo) {
           const photoBlob = await fetch(story.photo).then(r => r.blob());
           formData.append('photo', photoBlob, 'photo.jpg');
         }
 
-        // Get token from IndexedDB or cache
         const token = story.token;
         
         const response = await fetch('https://story-api.dicoding.dev/v1/stories', {
@@ -240,7 +235,6 @@ async function syncStories() {
         });
 
         if (response.ok) {
-          // Remove from offline storage after successful sync
           await deleteOfflineStory(db, story.id);
           console.log('Story synced successfully:', story.id);
         }
