@@ -1,6 +1,6 @@
 class NotificationHelper {
   constructor() {
-    this.vapidPublicKey = 'BP9ib2XGOTbm5T3jFNrcsMKWRZvCLGC7fANq-cz4rvfXcBb3wF_WlQBFmPZM2GNy_OXCNSlPvz_hX5XFpN5bJFQ';
+    this.vapidPublicKey = 'BCCs2eonMI-6H2ctvFaWg-UYdDv387Vno_bzUzALpB442r2lCnsHmtrx8biyPi_E-1fSGABK_Qs_GlvPoJJqxbk';
   }
 
   async checkPermission() {
@@ -59,6 +59,8 @@ class NotificationHelper {
       const subscription = await registration.pushManager.getSubscription();
 
       if (subscription) {
+        await this.sendUnsubscriptionToServer(subscription);
+        
         await subscription.unsubscribe();
         console.log('Push notification unsubscribed');
         return true;
@@ -67,6 +69,39 @@ class NotificationHelper {
       return false;
     } catch (error) {
       console.error('Failed to unsubscribe from push notifications:', error);
+      throw error;
+    }
+  }
+
+  async sendUnsubscriptionToServer(subscription) {
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const subscriptionJSON = subscription.toJSON();
+      const response = await fetch('https://story-api.dicoding.dev/v1/notifications/subscribe', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          endpoint: subscriptionJSON.endpoint,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to unsubscribe from server');
+      }
+
+      const result = await response.json();
+      console.log('Unsubscription sent to server:', result);
+      return result;
+    } catch (error) {
+      console.error('Error sending unsubscription to server:', error);
       throw error;
     }
   }
@@ -89,17 +124,30 @@ class NotificationHelper {
         throw new Error('No authentication token found');
       }
 
+      const subscriptionJSON = subscription.toJSON();
+      const subscriptionData = {
+        endpoint: subscriptionJSON.endpoint,
+        keys: {
+          p256dh: subscriptionJSON.keys.p256dh,
+          auth: subscriptionJSON.keys.auth,
+        },
+      };
+
+      console.log('Sending subscription to server:', subscriptionData);
+
       const response = await fetch('https://story-api.dicoding.dev/v1/notifications/subscribe', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(subscription?.toJSON ? subscription.toJSON() : subscription),
+        body: JSON.stringify(subscriptionData),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to send subscription to server');
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Subscription error response:', errorData);
+        throw new Error(errorData.message || 'Failed to send subscription to server');
       }
 
       const result = await response.json();
