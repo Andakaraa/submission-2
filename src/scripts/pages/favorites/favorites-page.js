@@ -81,6 +81,8 @@ export default class FavoritesPage {
           <p class="subtitle">Kumpulan cerita yang Anda simpan untuk dibaca kembali</p>
         </div>
 
+        <h2 class="visually-hidden">Daftar Cerita Favorit</h2>
+
         <div id="loading" class="loading-container" style="display: none;">
           <div class="spinner"></div>
           <p>Memuat favorit...</p>
