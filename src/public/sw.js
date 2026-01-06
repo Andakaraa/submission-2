@@ -44,7 +44,17 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
+  // Skip non-http(s) requests (e.g., chrome-extension) that cache API cannot handle
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+    return;
+  }
+
   if (url.origin === 'https://story-api.dicoding.dev') {
+    // Only cache GET requests; cache.put does not support POST/PUT
+    if (request.method !== 'GET') {
+      return;
+    }
+
     event.respondWith(
       fetch(request)
         .then((response) => {
@@ -70,6 +80,10 @@ self.addEventListener('fetch', (event) => {
           return response;
         }
         
+        if (request.method !== 'GET') {
+          return fetch(request);
+        }
+
         return fetch(request).then((response) => {
           if (!response || response.status !== 200 || response.type !== 'basic') {
             return response;
