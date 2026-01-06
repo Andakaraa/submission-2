@@ -136,7 +136,7 @@ export default class AddStoryPage {
             </div>
 
             <div class="form-group">
-              <label for="photo">Pilih Gambar <span class="required">*</span></label>
+              <label for="photo-input">Pilih Gambar <span class="required">*</span></label>
               <div class="image-options">
                 <button type="button" id="btn-file-upload" class="btn-image-option active">
                   📁 Upload File
@@ -150,7 +150,7 @@ export default class AddStoryPage {
             <div id="file-upload-container" class="form-group">
               <input 
                 type="file" 
-                id="photo" 
+                id="photo-input" 
                 name="photo" 
                 accept="image/*"
                 aria-label="Pilih gambar untuk cerita"
@@ -233,7 +233,7 @@ export default class AddStoryPage {
   }
 
   setupImageUpload() {
-    const fileInput = document.getElementById('photo');
+    const fileInput = document.getElementById('photo-input');
     const btnFileUpload = document.getElementById('btn-file-upload');
     const btnCamera = document.getElementById('btn-camera');
     const fileUploadContainer = document.getElementById('file-upload-container');
@@ -338,7 +338,7 @@ export default class AddStoryPage {
 
   clearImagePreview() {
     document.getElementById('preview-container').style.display = 'none';
-    document.getElementById('photo').value = '';
+    document.getElementById('photo-input').value = '';
     this.selectedFile = null;
   }
 
@@ -366,7 +366,7 @@ export default class AddStoryPage {
         return;
       }
 
-      const photoFile = this.selectedFile || document.getElementById('photo').files[0];
+      const photoFile = this.selectedFile || document.getElementById('photo-input').files[0];
       if (!photoFile) {
         this.showError('Silakan pilih gambar');
         return;
