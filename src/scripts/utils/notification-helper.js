@@ -34,18 +34,15 @@ class NotificationHelper {
     try {
       const registration = await navigator.serviceWorker.ready;
 
-      // Check if already subscribed
       let subscription = await registration.pushManager.getSubscription();
       
       if (!subscription) {
-        // Subscribe to push notifications
         subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: this.urlBase64ToUint8Array(this.vapidPublicKey),
         });
       }
 
-      // Send subscription to server
       await this.sendSubscriptionToServer(subscription);
       
       console.log('Push notification subscription successful');
@@ -92,13 +89,13 @@ class NotificationHelper {
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch('https://story-api.dicoding.dev/v1/push/subscribe', {
+      const response = await fetch('https://story-api.dicoding.dev/v1/notifications/subscribe', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(subscription),
+        body: JSON.stringify(subscription?.toJSON ? subscription.toJSON() : subscription),
       });
 
       if (!response.ok) {
