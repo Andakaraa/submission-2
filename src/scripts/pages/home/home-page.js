@@ -1,10 +1,14 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
+delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
 });
 import storyAPI from '../../data/story-api';
 import authAPI from '../../data/auth-api';
@@ -152,7 +156,6 @@ export default class HomePage {
       this.presenter.logout();
     });
 
-    // Notification toggle
     const notificationToggle = document.getElementById('notification-toggle');
     const updateNotificationUI = async () => {
       const isSubscribed = await notificationHelper.isSubscribed();
@@ -276,10 +279,8 @@ export default class HomePage {
       return;
     }
 
-    // Store stories for filtering
     this.allStories = stories;
 
-    // Check which stories are favorited
     const favoriteChecks = await Promise.all(
       stories.map(story => indexedDBHelper.isFavorite(story.id))
     );
@@ -307,11 +308,9 @@ export default class HomePage {
       this.filterStories(e.target.value, stories);
     });
 
-    // Add click listeners for story cards
     const storyCards = container.querySelectorAll('.story-card');
     storyCards.forEach((card, index) => {
       card.addEventListener('click', (e) => {
-        // Don't trigger if clicking favorite button
         if (e.target.classList.contains('btn-favorite')) {
           return;
         }
@@ -327,7 +326,6 @@ export default class HomePage {
       });
     });
 
-    // Add click listeners for favorite buttons
     const favoriteButtons = container.querySelectorAll('.btn-favorite');
     favoriteButtons.forEach(btn => {
       btn.addEventListener('click', async (e) => {
