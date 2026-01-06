@@ -4,6 +4,12 @@ import storyAPI from '../../data/story-api';
 import authAPI from '../../data/auth-api';
 import indexedDBHelper from '../../utils/indexeddb-helper';
 
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
+
 class AddStoryPresenter {
   constructor(view) {
     this.view = view;
@@ -126,7 +132,7 @@ export default class AddStoryPage {
             </div>
 
             <div class="form-group">
-              <label>Pilih Gambar <span class="required">*</span></label>
+              <label for="photo">Pilih Gambar <span class="required">*</span></label>
               <div class="image-options">
                 <button type="button" id="btn-file-upload" class="btn-image-option active">
                   📁 Upload File
